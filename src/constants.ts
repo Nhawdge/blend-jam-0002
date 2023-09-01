@@ -13,5 +13,7 @@ export default {
     RING_2_RADIUS: 311,
     RING_3_RADIUS: 327,
     RING_4_RADIUS: 343,
-    RING_5_RADIUS: 359
+    RING_5_RADIUS: 359,
+    MAX_ENEMIES_ON_SCREEN: 8,
+    SPAWN_SIZE: 400,
 };
