@@ -25,46 +25,43 @@ export default async function mainGameScene() : Promise<SceneBuilder> {
 
     const sheets = createResourceMap<PIXI.Spritesheet>();
     const animations = createResourceMap<string>();
-    const playerSheet = sheets.add(await loadAseprite('assets/player/player.png', 'assets/player/player.json'));
+    const playerSheet = sheets.add(await loadAseprite('assets/player/player.png', 'assets/player/player.json', 'player:'));
 
     // Define enemies
-    const chordTags = createResourceMap<string>();
     const chord:IEnemyInfo = {
-        sheet: sheets.add(await loadAseprite('assets/enemy/chord-enemy.png', 'assets/enemy/chord-enemy.json')),
+        sheet: sheets.add(await loadAseprite('assets/enemy/chord-enemy.png', 'assets/enemy/chord-enemy.json', 'lead:')),
+        speed: 1,
         minTimeToSpawn: 5,
         spawnRate: 1,
-        tags: chordTags,
         animations: {
-            idle: chordTags.add('idle')
+            idle: animations.add('lead:idle')
         }
     };
     ENEMIES.push(chord);
 
-    const leadTags = createResourceMap<string>();
     const lead:IEnemyInfo = {
-        sheet: sheets.add(await loadAseprite('assets/enemy/lead-enemy.png', 'assets/enemy/lead-enemy.json')),
+        sheet: sheets.add(await loadAseprite('assets/enemy/lead-enemy.png', 'assets/enemy/lead-enemy.json', 'chord:')),
+        speed: 1,
         minTimeToSpawn: 3,
         spawnRate: 1,
-        tags: leadTags,
         animations: {
-            idle: leadTags.add('idle')
+            idle: animations.add('chord:idle')
         }
     };
     ENEMIES.push(lead);
 
-    const snareTags = createResourceMap<string>();
     const snare:IEnemyInfo = {
-        sheet: sheets.add(await loadAseprite('assets/enemy/snare-enemy.png', 'assets/enemy/snare-enemy.json')),
+        sheet: sheets.add(await loadAseprite('assets/enemy/snare-enemy.png', 'assets/enemy/snare-enemy.json', 'snare:')),
+        speed: 1,
         minTimeToSpawn: 3,
         spawnRate: 1,
-        tags: snareTags,
         animations: {
-            idle: snareTags.add('idle')
+            idle: animations.add('snare:idle')
         }
     };
     ENEMIES.push(snare);
 
-    PlayerAnimations.Idle = animations.add('idle');
+    PlayerAnimations.Idle = animations.add('player:idle');
 
     return ({ world, container }: IGameContext) => {
         composeEntity(

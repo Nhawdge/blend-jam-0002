@@ -10,7 +10,7 @@ const AnimatedSprite = defineComponent({
 export function addAnimatedSprite(sheetId: number, initialAnimation:number) : initComponent {
     return (world, entity) => {
         addComponent(world, AnimatedSprite, entity);
-        AnimatedSprite.animationId[entity] = sheetId;
+        AnimatedSprite.sheetId[entity] = sheetId;
         AnimatedSprite.animationId[entity] = initialAnimation;
         AnimatedSprite.previousAnimationId[entity] = 0;
     }
