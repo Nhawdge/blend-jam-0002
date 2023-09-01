@@ -10,6 +10,7 @@ import { loadAseprite } from '../../Utils/AsepriteUtilities';
 import IGameContext from '../GameContext';
 import { SceneBuilder } from "../SceneManager";
 import PlayerAnimations, { playerMovementSystem, spawnPlayer } from './Player';
+import ENEMIES, { IEnemyInfo, spawnEnemiesSystem } from './Enemy';
 import { spawnNeedle } from './Needle';
 
 
@@ -22,9 +23,44 @@ export default async function mainGameScene() : Promise<SceneBuilder> {
     const animations = createResourceMap<string>();
     const playerSheet = sheets.add(await loadAseprite('assets/player/player.png', 'assets/player/player.json'));
 
+    // Define enemies
+    const chordTags = createResourceMap<string>();
+    const chord:IEnemyInfo = {
+        sheet: sheets.add(await loadAseprite('assets/enemy/chord-enemy.png', 'assets/enemy/chord-enemy.json')),
+        minTimeToSpawn: 5,
+        spawnRate: 1,
+        tags: chordTags,
+        animations: {
+            idle: chordTags.add('idle')
+        }
+    };
+    ENEMIES.push(chord);
+
+    const leadTags = createResourceMap<string>();
+    const lead:IEnemyInfo = {
+        sheet: sheets.add(await loadAseprite('assets/enemy/lead-enemy.png', 'assets/enemy/lead-enemy.json')),
+        minTimeToSpawn: 3,
+        spawnRate: 1,
+        tags: leadTags,
+        animations: {
+            idle: leadTags.add('idle')
+        }
+    };
+    ENEMIES.push(lead);
+
+    const snareTags = createResourceMap<string>();
+    const snare:IEnemyInfo = {
+        sheet: sheets.add(await loadAseprite('assets/enemy/snare-enemy.png', 'assets/enemy/snare-enemy.json')),
+        minTimeToSpawn: 3,
+        spawnRate: 1,
+        tags: snareTags,
+        animations: {
+            idle: snareTags.add('idle')
+        }
+    };
+    ENEMIES.push(snare);
+
     PlayerAnimations.Idle = animations.add('idle');
-
-
 
     return ({ world, container }: IGameContext) => {
         composeEntity(
@@ -45,6 +81,8 @@ export default async function mainGameScene() : Promise<SceneBuilder> {
 
             playerMovementSystem(),
             simplifiedPhysics(),
+
+            spawnEnemiesSystem(),
 
             updateSprites(),
             updateAnimatedSprites(sheets, animations),
