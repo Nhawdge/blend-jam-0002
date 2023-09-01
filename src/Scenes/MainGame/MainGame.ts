@@ -10,12 +10,9 @@ import { loadAseprite } from '../../Utils/AsepriteUtilities';
 import IGameContext from '../GameContext';
 import { SceneBuilder } from "../SceneManager";
 import PlayerAnimations, { playerMovementSystem, spawnPlayer } from './Player';
-<<<<<<< HEAD
 import { needleMovementSystem, spawnNeedle } from './Needle';
-=======
 import ENEMIES, { IEnemyInfo, spawnEnemiesSystem } from './Enemy';
 import { spawnNeedle } from './Needle';
->>>>>>> b6e7dfd0eaacababc274e3bf3f14f5d9805ac589
 
 
 export default async function mainGameScene() : Promise<SceneBuilder> {
