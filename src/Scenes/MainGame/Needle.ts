@@ -8,6 +8,7 @@ import Vec2 from "../../Utils/Vec2";
 import consts from '../../constants';
 import Sprite, { addSprite } from "../../Components/Spite";
 import DeltaTime from "../../Resources/DeltaTime";
+import Needle, { addNeedle } from "../../Components/Needle";
 
 const PlayerAnimations = {
     Idle: 0
@@ -15,12 +16,6 @@ const PlayerAnimations = {
 
 export default PlayerAnimations;
 
-// Player component
-const Needle = defineComponent({
-    radius: Types.f32,
-    speed: Types.f32,
-    angle: Types.f32
-});
 
 export function spawnNeedle(world:IWorld, needleSprite:number) {
     composeEntity(
@@ -28,7 +23,7 @@ export function spawnNeedle(world:IWorld, needleSprite:number) {
         [
             addPosition(328, 0),
             addSprite(needleSprite),
-            include(Needle)
+            addNeedle()
         ]
     );
 }
@@ -41,11 +36,22 @@ export function needleMovementSystem() {
     return defineSystem((world) => {
         const needle = needleQuery(world).find(x => true);
         if (!needle) { return world; }
+        Needle.currentTime[needle] += DeltaTime.get();
+        var duration = Needle.loopDuration[needle];
+        var segments = duration / 360;
+        var timePercent = Needle.currentTime[needle] / duration;
+        Needle.angle[needle] = segments * timePercent;
+        
+        
+        console.log({angle: Needle.angle[needle], delta: DeltaTime.get(), radius: Needle.radius[needle]})
+        //Needle.angle[needle] += (DeltaTime.get() / 1000) * Needle.speed[needle];
 
-        Needle.angle[needle] += DeltaTime.get() * Needle.speed[needle];
+        Sprite.angle[needle] = Needle.angle[needle];
 
-        Position.x[needle] = Math.cos(Needle.angle[needle]) * Needle.radius[needle];
-        Position.y[needle] = Math.sin(Needle.angle[needle]) * Needle.radius[needle];
+        var newX = Math.cos(Needle.angle[needle]) * Needle.radius[needle];
+        var newY = Math.sin(Needle.angle[needle]) * Needle.radius[needle];
+        Position.x[needle] = newX;
+        Position.y[needle] = newY;
         console.log("Test");
 
 
