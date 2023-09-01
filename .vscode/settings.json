@@ -1,7 +1,10 @@
 {
     "cSpell.words": [
+        "Aseprite",
         "bitecs",
+        "consts",
         "despawn",
-        "PIXI"
+        "PIXI",
+        "Spritesheet"
     ]
 }
