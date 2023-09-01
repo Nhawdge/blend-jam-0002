@@ -28,10 +28,12 @@ const Enemy = defineComponent({
     destX: Types.f32, // Destination location
     destY: Types.f32,
     startX: Types.f32,
-    startY: Types.f32
+    startY: Types.f32,
+    InCollision: Types.ui8,
+    DistanceToCenter: Types.f32,
 });
 
-function addEnemy(enemy:number, x:number, y:number):initComponent {
+function addEnemy(enemy: number, x: number, y: number): initComponent {
     return (world, entity) => {
         addComponent(world, Enemy, entity);
         Enemy.type[entity] = enemy;
@@ -42,6 +44,11 @@ function addEnemy(enemy:number, x:number, y:number):initComponent {
         Enemy.destY[entity] = 0;
         Enemy.startX[entity] = x;
         Enemy.startY[entity] = y;
+        Enemy.InCollision[entity] = 0;
+
+        var center = new Vec2(400, 400);
+
+        Enemy.DistanceToCenter[entity] = center.sub(new Vec2(x, y)).length();
     };
 }
 
@@ -49,6 +56,7 @@ export function spawnEnemiesSystem() {
     let nextSpawn = 5000;
     let totalTime = 0;
     let totalEnemies = 0;
+    var center = new Vec2(400, 400);
 
     return defineSystem((world) => {
         const delta = DeltaTime.get();
@@ -58,7 +66,7 @@ export function spawnEnemiesSystem() {
 
         if (nextSpawn < 0 && totalEnemies < consts.MAX_ENEMIES_ON_SCREEN) {
             let availableSpawns = ENEMIES.filter(x => x.minTimeToSpawn < totalTime)
-                .map((v, i) => ({ weight: v.spawnRate,  index: i }));
+                .map((v, i) => ({ weight: v.spawnRate, index: i }));
 
             // TODO: Weighted choice
             /*
@@ -75,7 +83,7 @@ export function spawnEnemiesSystem() {
 
             const x = (Math.random() * consts.SPAWN_SIZE) - (consts.SPAWN_SIZE / 2);
             const y = (Math.random() * consts.SPAWN_SIZE) - (consts.SPAWN_SIZE / 2);
-            
+
             composeEntity(world, [
                 addEnemy(result.index, x, y),
                 addAnimatedSprite(
@@ -85,9 +93,8 @@ export function spawnEnemiesSystem() {
                 addPosition(x, y)
             ]);
 
-
             nextSpawn = (Math.random() * 2000) + 1000;
-            
+
             totalEnemies += 1;
         }
 
@@ -98,8 +105,9 @@ export function spawnEnemiesSystem() {
 export function commenceToJigglin() {
 
     const enemyQuery = defineQuery([Enemy, Position]);
-    
+
     return defineSystem((world) => {
+        var center = new Vec2(400, 400);
         const delta = DeltaTime.get();
 
         for (let entity of enemyQuery(world)) {
@@ -123,6 +131,9 @@ export function commenceToJigglin() {
                     let newPosition = pos.add(offset);
                     Enemy.destX[entity] = newPosition.x;
                     Enemy.destY[entity] = newPosition.y;
+
+                    Enemy.DistanceToCenter[entity] = center.sub(newPosition).length();
+                    Enemy.InCollision[entity] = Enemy.DistanceToCenter[entity] > consts.RING_1_RADIUS && Enemy.DistanceToCenter[entity] < consts.RING_5_RADIUS ? 1 : 0;
                 }
 
                 const newTime = (Math.random() * 5000) + 2000;
@@ -141,16 +152,10 @@ export function commenceToJigglin() {
                 Position.x[entity] = diff.x;
                 Position.y[entity] = diff.y;
             }
-
-
-
         }
-
 
         return world;
     })
 }
 
-
 export default ENEMIES;
-
