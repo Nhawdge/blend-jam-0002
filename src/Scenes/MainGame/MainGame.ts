@@ -11,14 +11,22 @@ import { SceneBuilder } from "../SceneManager";
 export default async function mainGameScene() : Promise<SceneBuilder> {
     const textures = createResourceMap<PIXI.Texture>();
     const bg = textures.add(await PIXI.Assets.load('assets/game-background.png') as PIXI.Texture);
+    const playhead = textures.add(await PIXI.Assets.load('assets/playhead.png') as PIXI.Texture);
 
 
     return ({ world, container }: IGameContext) => {
         composeEntity(
             world,
             [
-                addPosition(0, 0),
+                addPosition(400, 200),
                 addSprite(bg)
+            ]
+        );
+
+        composeEntity(
+            world,
+            [
+                addSprite(playhead, 400, 400)
             ]
         );
 
