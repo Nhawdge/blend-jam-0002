@@ -15,7 +15,7 @@ export default {
 */
 
 // Aseprite JSON is not quite what PIXI is looking for
-export async function loadAseprite(texturePath:string, jsonPath:string) : Promise<PIXI.Spritesheet> {
+export async function loadAseprite(texturePath:string, jsonPath:string, tagPrefix:string | null) : Promise<PIXI.Spritesheet> {
     const texture = await PIXI.Assets.load(texturePath) as PIXI.Texture;
     const rawJson = await PIXI.Assets.load({
         src: jsonPath,
@@ -33,7 +33,7 @@ export async function loadAseprite(texturePath:string, jsonPath:string) : Promis
     for (const tag of json.meta.frameTags) {
         const length = tag.to - tag.from;
         let frames = [...Array(length + 1).keys()].map(i => (i + tag.from).toString());
-        output.animations[tag.name] = frames;
+        output.animations[(tagPrefix || '') + tag.name] = frames;
     }
     const sheet = new PIXI.Spritesheet(texture, output);
     sheet.parse();
