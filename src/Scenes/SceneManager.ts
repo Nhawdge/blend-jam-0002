@@ -38,8 +38,8 @@ export function manageScenes(
 
         let systems = sceneBuilder(context);
 
-        app.ticker.add((delta:number) => {
-            DeltaTime.set(delta);
+        app.ticker.add(() => {
+            DeltaTime.set(app.ticker.elapsedMS);
 
             for (const sys of systems) {
                 sys(world);
