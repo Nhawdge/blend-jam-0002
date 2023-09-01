@@ -65,9 +65,6 @@ export function playerMovementSystem() {
 
         Velocity.x[player] = newVelocity.x;
         Velocity.y[player] = newVelocity.y;
-        
-        
-
 
         return world;
     })
