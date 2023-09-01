@@ -17,10 +17,11 @@ export default {
     MAX_ENEMIES_ON_SCREEN: 8,
     SPAWN_SIZE: 400,
     NOTES: [
-        { NOTE: "C", COLOR: 0xec9e14 },
-        { NOTE: "D", COLOR: 0xecb913 },
-        { NOTE: "E", COLOR: 0xefd50e },
-        { NOTE: "G", COLOR: 0xe96254 },
-        { NOTE: "A", COLOR: 0xe46a28 },
+        { ID: 0, NOTE: "", COLOR: 0xffffff },
+        { ID: 1, NOTE: "C", COLOR: 0xec9e14 },
+        { ID: 2, NOTE: "D", COLOR: 0xecb913 },
+        { ID: 3, NOTE: "E", COLOR: 0xefd50e },
+        { ID: 4, NOTE: "G", COLOR: 0xe96254 },
+        { ID: 5, NOTE: "A", COLOR: 0xe46a28 },
     ],
 };

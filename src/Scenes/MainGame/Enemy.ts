@@ -17,6 +17,7 @@ import { composeEntity, initComponent } from "../../Components/ComponentInitiali
 import DeltaTime from "../../Resources/DeltaTime";
 import Position, { addPosition } from '../../Components/Position';
 import Vec2 from '../../Utils/Vec2';
+import constants from '../../constants';
 
 const ENEMIES: IEnemyInfo[] = [];
 
@@ -28,7 +29,8 @@ const Enemy = defineComponent({
     destX: Types.f32, // Destination location
     destY: Types.f32,
     startX: Types.f32,
-    startY: Types.f32
+    startY: Types.f32,
+    noteId: Types.i32
 });
 
 function addEnemy(enemy:number, x:number, y:number):initComponent {
@@ -42,6 +44,7 @@ function addEnemy(enemy:number, x:number, y:number):initComponent {
         Enemy.destY[entity] = 0;
         Enemy.startX[entity] = x;
         Enemy.startY[entity] = y;
+        Enemy.noteId[entity] = constants.NOTES[Math.random() * 10 % constants.NOTES.length].ID;
     };
 }
 

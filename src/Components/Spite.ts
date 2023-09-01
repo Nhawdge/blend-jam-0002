@@ -5,13 +5,16 @@ const Sprite = defineComponent({
     texture: Types.ui8,
     angle: Types.f32,
     focusX: Types.i32,
-    focusY: Types.i32
+    focusY: Types.i32,
+    tint: Types.i32
 });
 
 export function addSprite(texture: number, targetX: number = -1, targetY: number = -1) : initComponent {
     return (world, entity) => {
         addComponent(world, Sprite, entity);
         Sprite.angle[entity] = 0;
+        Sprite.tint[entity] = 0xffffff;
+        
         Sprite.texture[entity] = texture;
         Sprite.focusX[entity] = targetX;
         Sprite.focusY[entity] = targetY;
