@@ -22,6 +22,13 @@ Each loop, the player reads the positions in the track and sets note durations b
 
 */
 
+function getChordNotes(): Array<string>{
+
+    var notes:Array<string>=new Array<string>(3);
+
+    return new Array<string>();
+}
+
 enum TrackType {
     Repeat,
     Hold,
@@ -38,61 +45,61 @@ enum InstrumentType {
 }
 
 abstract class Instrument {
-    note: string = ""
     playBeat(): void {
 
     }
-    constructor(note?:string) {
-        if (typeof note != "undefined") {
-            this.note=note
-        }
-    }    
+    playNote(note:string):void{
+
+    }  
 }
 
 
 class Kick extends Instrument{
-
+    playBeat(): void {
+        const synth = new Tone.MembraneSynth().toDestination();
+        synth.triggerAttackRelease("C1", "8n");
+    }
 }
 
 class Snare extends Instrument{
-
-}
-
-class Bass extends Instrument{
-
+    playBeat(): void {
+        const noiseSynth = new Tone.NoiseSynth().toDestination();
+        noiseSynth.triggerAttackRelease("8n", 0.05);
+    }
 }
 
 class Chord extends Instrument{
-
+    playNote(note:string): void {
+        const chorus = new Tone.Chorus(4, 2.5, 0.5).toDestination().start();
+        const synth = new Tone.PolySynth().connect(chorus);
+        // set the attributes across all the voices using 'set'
+        synth.set({ detune: -1200 });
+        // play a chord
+        synth.triggerAttackRelease(["C4", "E4", "A4"], 1);
+    }
 }
 
 class Lead extends Instrument{
-
+    playNote(note:string): void {
+        const freeverb = new Tone.Freeverb().toDestination();
+        freeverb.dampening = 1000;
+        const synth = new Tone.Synth().connect(freeverb);
+        synth.triggerAttackRelease(note, "8n"); 
+        //synth.triggerAttackRelease("C4", "8n"); 
+    }
 }
 
-abstract class MusicTrack{
-    beats:Array<string>=new Array<string>(128)
-    instrument:Instrument=new Kick("C4")
-
-    add(note:string, beat:number, single:boolean) {
-
-    }
+class MusicTrack{
+    beats:Array<string>=new Array<string>(64)
+    instrument:Instrument;
 
     constructor(instrument:Instrument) {
         this.instrument=instrument
     }
-}
-
-class HoldTrack extends MusicTrack{
-
-}
-
-class RepeatTrack extends MusicTrack{
-
-}
-
-class SustainTrack extends MusicTrack{
-
+    
+    add(note:string, beat:number) {
+        this.beats[beat] = note;
+    }
 }
 
 class MusicLoop{
@@ -105,19 +112,36 @@ class MusicLoop{
     //Which beat are we on?
     currentBeat:number=0
 
-    kick:MusicTrack=new RepeatTrack(new Kick())
-    snare:MusicTrack=new RepeatTrack(new Snare())
-    bass:MusicTrack=new HoldTrack(new Bass())
-    chord:MusicTrack=new HoldTrack(new Chord())
-    lead:MusicTrack=new SustainTrack(new Lead())
+    kick:MusicTrack=new MusicTrack(new Kick())
+    snare:MusicTrack=new MusicTrack(new Snare())
+    chord:MusicTrack=new MusicTrack(new Chord())
+    lead:MusicTrack=new MusicTrack(new Lead())
 
-    tracks:Array<MusicTrack> = new Array<MusicTrack>(5)
+    tracks:Array<MusicTrack> = new Array<MusicTrack>(4)
+
+
 
     play() {
+        if(this.kick.beats[this.currentBeat] != ""){
+            this.kick.instrument.playBeat();
+        }
+        if(this.snare.beats[this.currentBeat] != ""){
+            this.snare.instrument.playBeat();
+        }
+        if(this.chord.beats[this.currentBeat] != ""){
+            this.chord.instrument.playNote(this.chord.beats[this.currentBeat]);
+        }
+        if(this.lead.beats[this.currentBeat] != ""){
+            this.lead.instrument.playNote(this.lead.beats[this.currentBeat]);
+        }
+        if(this.playing == false){
+            this.playing = true;
+        }
+
     }
 
     pause() {
-
+        this.playing = false;
     }
 
     constructor() {
