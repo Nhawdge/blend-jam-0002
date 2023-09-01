@@ -42,16 +42,6 @@ export function needleMovementSystem() {
         var timePercent = Needle.currentTime[needle] / duration;
         Needle.angle[needle] = segments * timePercent;
 
-
-        console.log({
-            currentTime: Needle.currentTime[needle],
-            duration,
-            segments,
-            timePercent,
-            angle: Needle.angle[needle],
-            delta: DeltaTime.get()
-        })
-
         //Needle.angle[needle] += (DeltaTime.get() / 1000) * Needle.speed[needle];
 
         Sprite.angle[needle] = Needle.angle[needle];
@@ -63,28 +53,6 @@ export function needleMovementSystem() {
 
         Position.x[needle] = newX;
         Position.y[needle] = newY;
-        console.log(newX, newY);
-        console.log("Test");
-
-
-        // let velocityAdjustment = new Vec2(0, 0);
-
-        // let newVelocity = new Vec2(
-        //     Velocity.x[player],
-        //     Velocity.y[player]
-        // );
-        // if (velocityAdjustment.x === 0 && velocityAdjustment.y === 0) {
-        //     newVelocity = newVelocity.timesScalar(consts.PLAYER_DRAG);
-        // } else {
-        //     newVelocity = newVelocity.add(velocityAdjustment);
-        // }
-
-        // newVelocity = newVelocity
-        //     .clamp(consts.MAX_PLAYER_SPEED, consts.MAX_PLAYER_SPEED);
-
-
-
-
 
         return world;
     })

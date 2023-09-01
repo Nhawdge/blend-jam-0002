@@ -10,6 +10,9 @@ export default class Vec2 {
 
     clone() { return new Vec2 (this.x, this.y); }
 
+    length() { return Math.sqrt(this.x * this.x + this.y * this.y); }
+    
+
     add(vec:Vec2) {
         return new Vec2(this.x + vec.x, this.y + vec.y);
     }
