@@ -17,7 +17,7 @@ const PlayerAnimations = {
 export default PlayerAnimations;
 
 
-export function spawnNeedle(world:IWorld, needleSprite:number) {
+export function spawnNeedle(world: IWorld, needleSprite: number) {
     composeEntity(
         world,
         [
@@ -41,17 +41,29 @@ export function needleMovementSystem() {
         var segments = duration / 360;
         var timePercent = Needle.currentTime[needle] / duration;
         Needle.angle[needle] = segments * timePercent;
-        
-        
-        console.log({angle: Needle.angle[needle], delta: DeltaTime.get(), radius: Needle.radius[needle]})
+
+
+        console.log({
+            currentTime: Needle.currentTime[needle],
+            duration,
+            segments,
+            timePercent,
+            angle: Needle.angle[needle],
+            delta: DeltaTime.get()
+        })
+
         //Needle.angle[needle] += (DeltaTime.get() / 1000) * Needle.speed[needle];
 
         Sprite.angle[needle] = Needle.angle[needle];
 
-        var newX = Math.cos(Needle.angle[needle]) * Needle.radius[needle];
-        var newY = Math.sin(Needle.angle[needle]) * Needle.radius[needle];
+        var angleInRadians = Needle.angle[needle] / 180 * Math.PI;
+
+        var newX = Math.cos(angleInRadians) * Needle.radius[needle];
+        var newY = Math.sin(angleInRadians) * Needle.radius[needle];
+
         Position.x[needle] = newX;
         Position.y[needle] = newY;
+        console.log(newX, newY);
         console.log("Test");
 
 
@@ -70,8 +82,8 @@ export function needleMovementSystem() {
         // newVelocity = newVelocity
         //     .clamp(consts.MAX_PLAYER_SPEED, consts.MAX_PLAYER_SPEED);
 
-        
-        
+
+
 
 
         return world;

@@ -34,7 +34,7 @@ export function spawnPlayer(world:IWorld, playerSheet:number) {
 export function playerMovementSystem() {
 
     const playerQuery = defineQuery([Player, Velocity]);
-
+ 
     return defineSystem((world) => {
         const player = playerQuery(world).find(x => true);
         if (!player) { return world; }
