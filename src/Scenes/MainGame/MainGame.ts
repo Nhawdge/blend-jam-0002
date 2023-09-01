@@ -10,12 +10,13 @@ import { loadAseprite } from '../../Utils/AsepriteUtilities';
 import IGameContext from '../GameContext';
 import { SceneBuilder } from "../SceneManager";
 import PlayerAnimations, { playerMovementSystem, spawnPlayer } from './Player';
+import { spawnNeedle } from './Needle';
 
 
 export default async function mainGameScene() : Promise<SceneBuilder> {
     const textures = createResourceMap<PIXI.Texture>();
     const bg = textures.add(await PIXI.Assets.load('assets/prototype-level.png') as PIXI.Texture);
-    const playhead = textures.add(await PIXI.Assets.load('assets/playhead.png') as PIXI.Texture);
+    const needleTexture = textures.add(await PIXI.Assets.load('assets/needle.png') as PIXI.Texture);
 
     const sheets = createResourceMap<PIXI.Spritesheet>();
     const animations = createResourceMap<string>();
@@ -29,20 +30,13 @@ export default async function mainGameScene() : Promise<SceneBuilder> {
         composeEntity(
             world,
             [
-                addPosition(400, 200),
+                addPosition(0, 0),
                 addSprite(bg)
             ]
         );
 
-
-        composeEntity(
-            world,
-            [
-                addSprite(playhead, 400, 400)
-            ]
-        );
-
         spawnPlayer(world, playerSheet);
+        spawnNeedle(world, needleTexture);
 
 
         return [
