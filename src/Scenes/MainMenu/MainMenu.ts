@@ -10,6 +10,9 @@ import { despawnSprites, spawnSprites, updateSprites } from '../../Systems/Sprit
 import keys from '../../Resources/KeysResource';
 import sceneResource from '../../Resources/SceneResource';
 import SceneNames from '../SceneNames';
+import { loadAseprite } from '../../Utils/AsepriteUtilities';
+import { addAnimatedSprite } from '../../Components/AnimatedSprite';
+import { despawnAnimatedSprites, spawnAnimatedSprites } from '../../Systems/AnimatedSpriteSystem';
 
 const MainMenu = defineComponent({});
 
@@ -33,8 +36,10 @@ function mainMenu () {
 
 export default async function mainMenuScene() : Promise<SceneBuilder> {
 
-    const textures = createResourceMap<PIXI.Texture>();
-    const menu = textures.add(await PIXI.Assets.load('assets/menu-background.png') as PIXI.Texture);
+    const sheets = createResourceMap<PIXI.Spritesheet>();
+    const animations = createResourceMap<string>();
+    const menuSheet = sheets.add(await loadAseprite('assets/itch-title-screen-sheet.png', 'assets/itch-title-screen.json', 'menu:'));
+    const idle = animations.add('menu:idle');
 
 
     return function({world, container}:IGameContext) {
@@ -43,16 +48,16 @@ export default async function mainMenuScene() : Promise<SceneBuilder> {
             [
                 addPosition(0, 0),
                 include(MainMenu),
-                addSprite(menu)
+                addAnimatedSprite(menuSheet, idle)
             ]
         );
 
         return [
-            spawnSprites(textures, container),
+            spawnAnimatedSprites(sheets, animations, container),
             mainMenu(),
 
             updateSprites(),
-            despawnSprites(container)
+            despawnAnimatedSprites(container)
         ];
     }
 }
