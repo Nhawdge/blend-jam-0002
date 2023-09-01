@@ -8,4 +8,10 @@ export default {
     PLAYER_ACCELERATION: 0.4,
     MAX_PLAYER_SPEED: 5,
     PLAYER_DRAG: 0.2,
+    PLATFORM_RADIUS: 275,
+    RING_1_RADIUS: 295, //inner-most ring's center point
+    RING_2_RADIUS: 311,
+    RING_3_RADIUS: 327,
+    RING_4_RADIUS: 343,
+    RING_5_RADIUS: 359
 };
