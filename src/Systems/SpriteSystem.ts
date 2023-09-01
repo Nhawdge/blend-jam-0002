@@ -27,7 +27,6 @@ export function spawnSprites(
             sprite.y = Position.y[entity];
             sprite.anchor.set(0.5);
             sprite.angle = Sprite.angle[entity];
-            console.log(sprite);
             
             container.addChild(sprite);
             

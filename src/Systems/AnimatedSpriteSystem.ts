@@ -50,6 +50,7 @@ export function updateAnimatedSprites(
 
             sprite.x = Position.x[entity];
             sprite.y = Position.y[entity];
+            sprite.tint = new PIXI.Color()
 
             const animationId = AnimatedSprite.animationId[entity];
             const previous = AnimatedSprite.previousAnimationId[entity];

@@ -16,6 +16,8 @@ export default {
     RING_5_RADIUS: 359,
     MAX_ENEMIES_ON_SCREEN: 8,
     SPAWN_SIZE: 400,
+    SWIPE_TIME: 500,
+    SWIPE_RADIUS: 30,
     NOTES: [
         { NOTE: "C", COLOR: 0xec9e14 },
         { NOTE: "D", COLOR: 0xecb913 },

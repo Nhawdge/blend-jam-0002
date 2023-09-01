@@ -9,15 +9,16 @@ import { despawnSprites, spawnSprites, updateSprites } from '../../Systems/Sprit
 import { loadAseprite } from '../../Utils/AsepriteUtilities';
 import IGameContext from '../GameContext';
 import { SceneBuilder } from "../SceneManager";
-import PlayerAnimations, { playerMovementSystem, spawnPlayer } from './Player';
+import PlayerAnimations, { playerAttackSystem, playerMovementSystem, spawnPlayer, spinAxeSystem } from './Player';
 import { needleMovementSystem, spawnNeedle } from './Needle';
-import ENEMIES, { commenceToJigglin, IEnemyInfo, spawnEnemiesSystem } from './Enemy';
+import Enemy, { commenceToJigglin, IEnemyInfo, spawnEnemiesSystem } from './Enemy';
 
 
 export default async function mainGameScene() : Promise<SceneBuilder> {
     const textures = createResourceMap<PIXI.Texture>();
     const bg = textures.add(await PIXI.Assets.load('assets/prototype-level.png') as PIXI.Texture);
     const needleTexture = textures.add(await PIXI.Assets.load('assets/needle.png') as PIXI.Texture);
+    const axeTexture = textures.add(await PIXI.Assets.load('assets/player/pickaxe.png') as PIXI.Texture);
 
     const sheets = createResourceMap<PIXI.Spritesheet>();
     const animations = createResourceMap<string>();
@@ -33,7 +34,7 @@ export default async function mainGameScene() : Promise<SceneBuilder> {
             idle: animations.add('pebble:idle')
         }
     };
-    ENEMIES.push(pebble);
+    Enemy.ENEMIES.push(pebble);
 
     const rock:IEnemyInfo = {
         sheet: sheets.add(await loadAseprite('assets/enemy/rock.png', 'assets/enemy/rock.json', 'rock:')),
@@ -44,7 +45,7 @@ export default async function mainGameScene() : Promise<SceneBuilder> {
             idle: animations.add('rock:idle')
         }
     };
-    ENEMIES.push(rock);
+    Enemy.ENEMIES.push(rock);
 
     const boulder:IEnemyInfo = {
         sheet: sheets.add(await loadAseprite('assets/enemy/boulder.png', 'assets/enemy/boulder.json', 'boulder:')),
@@ -55,7 +56,7 @@ export default async function mainGameScene() : Promise<SceneBuilder> {
             idle: animations.add('boulder:idle')
         }
     };
-    ENEMIES.push(boulder);
+    Enemy.ENEMIES.push(boulder);
 
     // const chord:IEnemyInfo = {
     //     sheet: sheets.add(await loadAseprite('assets/enemy/chord-enemy.png', 'assets/enemy/chord-enemy.json', 'lead:')),
@@ -88,7 +89,7 @@ export default async function mainGameScene() : Promise<SceneBuilder> {
             idle: animations.add('snare:idle')
         }
     };
-    ENEMIES.push(snare);
+    Enemy.ENEMIES.push(snare);
 
     PlayerAnimations.Idle = animations.add('player:idle');
 
@@ -110,6 +111,8 @@ export default async function mainGameScene() : Promise<SceneBuilder> {
             spawnAnimatedSprites(sheets, animations, container),
 
             playerMovementSystem(),
+            playerAttackSystem(axeTexture),
+            spinAxeSystem(),
             simplifiedPhysics(),
             needleMovementSystem(),
 

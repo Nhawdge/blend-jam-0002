@@ -1,11 +1,14 @@
-import { defineComponent, defineQuery, defineSystem, IWorld } from "bitecs";
+import { addComponent, defineComponent, defineQuery, defineSystem, IWorld, removeEntity, Types } from "bitecs";
 import { addAnimatedSprite } from "../../Components/AnimatedSprite";
-import { composeEntity, include } from "../../Components/ComponentInitializer";
+import { composeEntity, include, initComponent } from "../../Components/ComponentInitializer";
 import Position, { addPosition } from "../../Components/Position";
 import Velocity, { addVelocity } from "../../Components/Velocity";
 import keys from '../../Resources/KeysResource';
 import Vec2 from "../../Utils/Vec2";
 import consts from '../../constants';
+import DeltaTime from "../../Resources/DeltaTime";
+import Sprite, { addSprite } from "../../Components/Spite";
+import Enemy from '../MainGame/Enemy';
 
 const PlayerAnimations = {
     Idle: 0
@@ -15,8 +18,22 @@ export default PlayerAnimations;
 
 // Player component
 const Player = defineComponent({
-
+    isAttacking: Types.ui8,
+    attackTime: Types.f32
 });
+
+const Axe = defineComponent({
+    time: Types.f32,
+    attackTime: Types.f32
+});
+
+function addAxe(time: number) : initComponent {
+    return (world, entity) => {
+        addComponent(world, Axe, entity);
+        Axe.attackTime[entity] = time;
+        Axe.time[entity] = 0;
+    };
+}
 
 export function spawnPlayer(world:IWorld, playerSheet:number) {
     composeEntity(
@@ -71,3 +88,75 @@ export function playerMovementSystem() {
 }
 
 
+export function playerAttackSystem(spriteTexture:number) {
+    const playerQuery = defineQuery([Player, Velocity, Position]);
+ 
+    return defineSystem((world) => {
+        const player = playerQuery(world).find(x => true);
+        if (!player) { return world; }
+
+        const isAttacking = Player.isAttacking[player] != 0;
+        const delta = DeltaTime.get();
+        if (isAttacking) {
+            Player.attackTime[player] += delta;
+            if (Player.attackTime[player] > consts.SWIPE_TIME) {
+                Player.isAttacking[player] = 0;
+            }
+        } else {
+            if (keys.keyJustReleased(' ')) {
+                Player.isAttacking[player] = 1;
+                Player.attackTime[player] = 0;
+
+                composeEntity(world, [
+                    addSprite(spriteTexture),
+                    addPosition(Position.x[player], Position.y[player] - 5),
+                    addAxe(consts.SWIPE_TIME)
+                ]);
+
+            }
+        }
+
+
+
+
+        return world;
+    });
+}
+
+export function spinAxeSystem() {
+
+    const playerQuery = defineQuery([Player, Position]);
+    const axeQuery = defineQuery([Position, Axe, Sprite]);
+    const enemies = defineQuery([Enemy.Enemy])
+
+    return defineSystem((world) => {
+        const delta = DeltaTime.get();
+        const player = playerQuery(world).find(x => true);
+        if (!player) { return world; }
+
+        for (const axe of axeQuery(world)) {
+
+            const time = Axe.time[axe] + delta;
+            const duration = time / Axe.attackTime[axe];
+            console.log(duration);
+
+            if (duration > 1) {
+                removeEntity(world, axe);
+                continue;
+            }
+
+            const radians = duration * 2 * Math.PI;
+
+            var newX = Math.cos(radians) * consts.SWIPE_RADIUS;
+            var newY = Math.sin(radians) * consts.SWIPE_RADIUS;
+            
+            Sprite.angle[axe] = radians;
+            Position.x[axe] = newX + Position.x[player];
+            Position.y[axe] = newY + Position.y[player];
+            Axe.time[axe] = time;
+        }
+
+
+        return world;
+    })
+}

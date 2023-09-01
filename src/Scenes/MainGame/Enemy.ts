@@ -158,4 +158,9 @@ export function commenceToJigglin() {
     })
 }
 
-export default ENEMIES;
+
+export default {
+    ENEMIES,
+    Enemy
+};
+
