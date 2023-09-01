@@ -4,6 +4,8 @@ import { manageScenes, SceneBuilder } from './Scenes/SceneManager';
 import sceneResource from './Resources/SceneResource';
 import SceneNames from './Scenes/SceneNames';
 import consts from './constants';
+import mainMenuScene from './Scenes/MainMenu/MainMenu';
+import mainGameScene from './Scenes/MainGame/MainGame';
 
 const scale = 5;
 
@@ -31,9 +33,8 @@ async function main() {
 
   // Load all scenes
   const scenes = createResourceMap<SceneBuilder>();
-  // SceneNames.MainMenu = scenes.add(await createMenuScene());
-  // SceneNames.GameOver = scenes.add(await createGameOverScene());
-  // SceneNames.Game = scenes.add(await loadGameScene());
+  SceneNames.MainMenu = scenes.add(await mainMenuScene());
+  SceneNames.Game = scenes.add(await mainGameScene());
   sceneResource.set(SceneNames.MainMenu);
 
   manageScenes(scenes, app);
