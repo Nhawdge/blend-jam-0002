@@ -4,6 +4,7 @@ import { manageScenes, SceneBuilder } from './Scenes/SceneManager';
 import sceneResource from './Resources/SceneResource';
 import SceneNames from './Scenes/SceneNames';
 import consts from './constants';
+import MusicLoop from './Resources/MusicLoop';
 import mainMenuScene from './Scenes/MainMenu/MainMenu';
 import mainGameScene from './Scenes/MainGame/MainGame';
 
@@ -38,5 +39,7 @@ async function main() {
   sceneResource.set(SceneNames.MainMenu);
 
   manageScenes(scenes, app);
+
+
 }
 main().catch(console.error);

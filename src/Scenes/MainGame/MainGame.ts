@@ -24,27 +24,60 @@ export default async function mainGameScene() : Promise<SceneBuilder> {
     const playerSheet = sheets.add(await loadAseprite('assets/player/player.png', 'assets/player/player.json', 'player:'));
 
     // Define enemies
-    const chord:IEnemyInfo = {
-        sheet: sheets.add(await loadAseprite('assets/enemy/chord-enemy.png', 'assets/enemy/chord-enemy.json', 'lead:')),
+    const pebble:IEnemyInfo = {
+        sheet: sheets.add(await loadAseprite('assets/enemy/pebble.png', 'assets/enemy/pebble.json', 'pebble:')),
         speed: 1,
         minTimeToSpawn: 5,
         spawnRate: 1,
         animations: {
-            idle: animations.add('lead:idle')
+            idle: animations.add('pebble:idle')
         }
     };
-    ENEMIES.push(chord);
+    ENEMIES.push(pebble);
 
-    const lead:IEnemyInfo = {
-        sheet: sheets.add(await loadAseprite('assets/enemy/lead-enemy.png', 'assets/enemy/lead-enemy.json', 'chord:')),
+    const rock:IEnemyInfo = {
+        sheet: sheets.add(await loadAseprite('assets/enemy/rock.png', 'assets/enemy/rock.json', 'rock:')),
         speed: 1,
-        minTimeToSpawn: 3,
+        minTimeToSpawn: 5,
         spawnRate: 1,
         animations: {
-            idle: animations.add('chord:idle')
+            idle: animations.add('rock:idle')
         }
     };
-    ENEMIES.push(lead);
+    ENEMIES.push(rock);
+
+    const boulder:IEnemyInfo = {
+        sheet: sheets.add(await loadAseprite('assets/enemy/boulder.png', 'assets/enemy/boulder.json', 'boulder:')),
+        speed: 1,
+        minTimeToSpawn: 5,
+        spawnRate: 1,
+        animations: {
+            idle: animations.add('boulder:idle')
+        }
+    };
+    ENEMIES.push(boulder);
+
+    // const chord:IEnemyInfo = {
+    //     sheet: sheets.add(await loadAseprite('assets/enemy/chord-enemy.png', 'assets/enemy/chord-enemy.json', 'lead:')),
+    //     speed: 1,
+    //     minTimeToSpawn: 5,
+    //     spawnRate: 1,
+    //     animations: {
+    //         idle: animations.add('lead:idle')
+    //     }
+    // };
+    // ENEMIES.push(chord);
+
+    // const lead:IEnemyInfo = {
+    //     sheet: sheets.add(await loadAseprite('assets/enemy/lead-enemy.png', 'assets/enemy/lead-enemy.json', 'chord:')),
+    //     speed: 1,
+    //     minTimeToSpawn: 3,
+    //     spawnRate: 1,
+    //     animations: {
+    //         idle: animations.add('chord:idle')
+    //     }
+    // };
+    // ENEMIES.push(lead);
 
     const snare:IEnemyInfo = {
         sheet: sheets.add(await loadAseprite('assets/enemy/snare-enemy.png', 'assets/enemy/snare-enemy.json', 'snare:')),
