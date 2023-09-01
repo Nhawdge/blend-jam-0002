@@ -11,7 +11,7 @@ import IGameContext from '../GameContext';
 import { SceneBuilder } from "../SceneManager";
 import PlayerAnimations, { playerMovementSystem, spawnPlayer } from './Player';
 import { needleMovementSystem, spawnNeedle } from './Needle';
-import ENEMIES, { IEnemyInfo, spawnEnemiesSystem } from './Enemy';
+import ENEMIES, { commenceToJigglin, IEnemyInfo, spawnEnemiesSystem } from './Enemy';
 import { spawnNeedle } from './Needle';
 
 
@@ -82,6 +82,7 @@ export default async function mainGameScene() : Promise<SceneBuilder> {
             needleMovementSystem(),
 
             spawnEnemiesSystem(),
+            commenceToJigglin(),
 
             updateSprites(),
             updateAnimatedSprites(sheets, animations),
