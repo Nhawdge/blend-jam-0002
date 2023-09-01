@@ -10,7 +10,7 @@ import { loadAseprite } from '../../Utils/AsepriteUtilities';
 import IGameContext from '../GameContext';
 import { SceneBuilder } from "../SceneManager";
 import PlayerAnimations, { playerMovementSystem, spawnPlayer } from './Player';
-import { spawnNeedle } from './Needle';
+import { needleMovementSystem, spawnNeedle } from './Needle';
 
 
 export default async function mainGameScene() : Promise<SceneBuilder> {
@@ -45,6 +45,7 @@ export default async function mainGameScene() : Promise<SceneBuilder> {
 
             playerMovementSystem(),
             simplifiedPhysics(),
+            needleMovementSystem(),
 
             updateSprites(),
             updateAnimatedSprites(sheets, animations),

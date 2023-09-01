@@ -6,7 +6,7 @@ import Velocity, { addVelocity } from "../../Components/Velocity";
 import keys from '../../Resources/KeysResource';
 import Vec2 from "../../Utils/Vec2";
 import consts from '../../constants';
-import { addSprite } from "../../Components/Spite";
+import Sprite, { addSprite } from "../../Components/Spite";
 import DeltaTime from "../../Resources/DeltaTime";
 
 const PlayerAnimations = {
@@ -36,7 +36,7 @@ export function spawnNeedle(world:IWorld, needleSprite:number) {
 
 export function needleMovementSystem() {
 
-    const needleQuery = defineQuery([Needle, Velocity]);
+    const needleQuery = defineQuery([Needle, Position, Sprite]);
 
     return defineSystem((world) => {
         const needle = needleQuery(world).find(x => true);
@@ -46,6 +46,7 @@ export function needleMovementSystem() {
 
         Position.x[needle] = Math.cos(Needle.angle[needle]) * Needle.radius[needle];
         Position.y[needle] = Math.sin(Needle.angle[needle]) * Needle.radius[needle];
+        console.log("Test");
 
 
         // let velocityAdjustment = new Vec2(0, 0);
