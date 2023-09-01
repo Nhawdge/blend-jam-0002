@@ -1,5 +1,5 @@
 import * as Tone from 'tone'
-import { Instrument } from 'tone/build/esm/instrument/Instrument'
+import { Instrument as inst } from 'tone/build/esm/instrument/Instrument'
 
 
 /*
