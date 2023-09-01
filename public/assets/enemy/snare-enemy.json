@@ -18,7 +18,7 @@
  },
  "meta": {
   "app": "https://www.aseprite.org/",
-  "version": "1.3-rc2-x64",
+  "version": "1.3-rc4-x64",
   "image": "snare-enemy.png",
   "format": "RGBA8888",
   "size": { "w": 64, "h": 32 },
