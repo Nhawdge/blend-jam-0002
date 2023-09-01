@@ -49,6 +49,22 @@ export function debugColliders(container:PIXI.Container) {
     })
 }
 
+export function simplifiedPhysics() {
+    const kineticsQuery = defineQuery([Position, Velocity]);
+
+    return defineSystem((world) => {
+
+        for (const entity of kineticsQuery(world)) {
+            // TODO: Constraints
+
+            Position.x[entity] += Velocity.x[entity];
+            Position.y[entity] += Velocity.y[entity];
+        }
+
+        return world;
+    });
+}
+
 export function applyPhysics() {
     const kineticsQuery = defineQuery([Position, Velocity, KineticBody]);
     const staticBodyQuery = defineQuery([Position, StaticBody]);
