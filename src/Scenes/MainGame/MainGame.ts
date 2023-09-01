@@ -13,7 +13,7 @@ import PlayerAnimations, { spawnPlayer } from './Player';
 
 export default async function mainGameScene() : Promise<SceneBuilder> {
     const textures = createResourceMap<PIXI.Texture>();
-    const bg = textures.add(await PIXI.Assets.load('assets/game-background.png') as PIXI.Texture);
+    const bg = textures.add(await PIXI.Assets.load('assets/prototype-level.png') as PIXI.Texture);
     const playhead = textures.add(await PIXI.Assets.load('assets/playhead.png') as PIXI.Texture);
 
     const sheets = createResourceMap<PIXI.Spritesheet>();
