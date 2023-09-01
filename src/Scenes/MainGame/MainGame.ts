@@ -4,11 +4,12 @@ import { addPosition } from '../../Components/Position';
 import { addSprite } from '../../Components/Spite';
 import createResourceMap from "../../IResourceMap";
 import { despawnAnimatedSprites, spawnAnimatedSprites, updateAnimatedSprites } from '../../Systems/AnimatedSpriteSystem';
+import { simplifiedPhysics } from '../../Systems/PhysicsSystems';
 import { despawnSprites, spawnSprites, updateSprites } from '../../Systems/SpriteSystem';
 import { loadAseprite } from '../../Utils/AsepriteUtilities';
 import IGameContext from '../GameContext';
 import { SceneBuilder } from "../SceneManager";
-import PlayerAnimations, { spawnPlayer } from './Player';
+import PlayerAnimations, { playerMovementSystem, spawnPlayer } from './Player';
 
 
 export default async function mainGameScene() : Promise<SceneBuilder> {
@@ -47,6 +48,9 @@ export default async function mainGameScene() : Promise<SceneBuilder> {
         return [
             spawnSprites(textures, container),
             spawnAnimatedSprites(sheets, animations, container),
+
+            playerMovementSystem(),
+            simplifiedPhysics(),
 
             updateSprites(),
             updateAnimatedSprites(sheets, animations),

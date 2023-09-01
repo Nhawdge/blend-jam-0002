@@ -37,4 +37,15 @@ export default class Vec2 {
     abs() {
         return new Vec2(Math.abs(this.x), Math.abs(this.y));
     }
+
+    clamp(maxX:number, maxY:number) {
+        let x = Math.min(this.x, maxX);
+        x = Math.max(x, -maxX);
+
+
+        let y = Math.min(this.y, maxY);
+        y = Math.max(y, -maxY);
+
+        return new Vec2(x, y);
+    }
 }

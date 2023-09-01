@@ -5,4 +5,7 @@ export default {
     PLATFORM_WIDTH: [9 * 32, 9 * 32],
     SCALE: 1,
     TILE_SIZE: 32,
+    PLAYER_ACCELERATION: 0.4,
+    MAX_PLAYER_SPEED: 5,
+    PLAYER_DRAG: 0.2,
 };
