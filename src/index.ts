@@ -4,6 +4,7 @@ import { manageScenes, SceneBuilder } from './Scenes/SceneManager';
 import sceneResource from './Resources/SceneResource';
 import SceneNames from './Scenes/SceneNames';
 import consts from './constants';
+import MusicLoop from './Resources/MusicLoop';
 
 const scale = 5;
 
@@ -37,5 +38,7 @@ async function main() {
   sceneResource.set(SceneNames.MainMenu);
 
   manageScenes(scenes, app);
+
+
 }
 main().catch(console.error);
