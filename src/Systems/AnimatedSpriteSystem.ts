@@ -30,6 +30,11 @@ export function spawnAnimatedSprites(
             sprite.y = Position.y[entity];
             sprite.anchor.set(0.5);
 
+            const tint = AnimatedSprite.tint[entity];
+            if (tint > 0) {
+                sprite.tint = tint;
+            }
+
             container.addChild(sprite);
             
             map.set(entity, sprite);
@@ -50,7 +55,11 @@ export function updateAnimatedSprites(
 
             sprite.x = Position.x[entity];
             sprite.y = Position.y[entity];
-            sprite.tint = new PIXI.Color()
+            const tint = AnimatedSprite.tint[entity];
+            if (tint > 0) {
+                sprite.tint = tint;
+            }
+
 
             const animationId = AnimatedSprite.animationId[entity];
             const previous = AnimatedSprite.previousAnimationId[entity];
@@ -60,7 +69,7 @@ export function updateAnimatedSprites(
                 const sheet = sheets.get(AnimatedSprite.sheetId[entity]);
                 const animation = animations.get(AnimatedSprite.animationId[entity]);
                 const texture = sheet.animations[animation];
-    
+
                 sprite.textures = texture;
                 sprite.play();
             }

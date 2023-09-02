@@ -106,15 +106,18 @@ export function spawnEnemiesSystem() {
             const y = (Math.random() * consts.SPAWN_SIZE) - (consts.SPAWN_SIZE / 2);
 
             let note = 0;
+            let tint = -1;
             if (enemyInfo.useNotes) {
                 note = Math.floor(Math.random() * constants.NOTES.length);
+                tint = constants.NOTES[note].COLOR;
             }
 
             composeEntity(world, [
                 addEnemy(result.index, x, y, note),
                 addAnimatedSprite(
                     enemyInfo.sheet,
-                    enemyInfo.animations.idle
+                    enemyInfo.animations.idle,
+                    tint
                 ),
                 addPosition(x, y)
             ]);

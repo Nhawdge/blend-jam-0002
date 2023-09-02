@@ -21,6 +21,8 @@ Each loop, the player reads the positions in the track and sets note durations b
 
 */
 
+const VOLUME_ADJUSTMENT = -24;
+
 interface Instrument {
     playNote(note:string | null):void;
 }
@@ -30,7 +32,9 @@ class Kick implements Instrument{
     private synth:Tone.MembraneSynth;
 
     constructor() {
-        this.synth = new Tone.MembraneSynth().toDestination();
+        this.synth = new Tone.MembraneSynth({
+            volume: VOLUME_ADJUSTMENT
+        }).toDestination();
     }
 
     playNote(note:string | null): void {
@@ -42,7 +46,7 @@ class Snare implements Instrument{
     private noiseSynth:Tone.NoiseSynth;
     constructor() {
         this.noiseSynth = new Tone.NoiseSynth({
-            volume: 0,
+            volume: VOLUME_ADJUSTMENT,
             envelope: {
 				attack: 0.01,
 				decay: 0.3
@@ -61,7 +65,9 @@ class Chord implements Instrument{
 
     constructor() {
         this.chorus = new Tone.Chorus(4, 2.5, 0.5).toDestination().start();
-        this.synth = new Tone.PolySynth().connect(this.chorus);
+        this.synth = new Tone.PolySynth({
+            volume: VOLUME_ADJUSTMENT
+        }).connect(this.chorus);
         this.synth.set({ detune: -1200 });
     }
 
@@ -78,7 +84,9 @@ class Lead implements Instrument{
         this.freeverb = new Tone.Freeverb().toDestination();
         this.freeverb.dampening = 1000;
 
-        this.synth = new Tone.Synth().connect(this.freeverb);
+        this.synth = new Tone.Synth({
+            volume: VOLUME_ADJUSTMENT
+        }).connect(this.freeverb);
 
     }
 
