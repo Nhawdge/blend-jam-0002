@@ -11,12 +11,14 @@ export type IEnemyInfo = {
     }
 }
 
-import { addComponent, defineComponent, defineQuery, defineSystem, IWorld, Types } from "bitecs";
+import { addComponent, defineComponent, defineQuery, defineSystem, IWorld, removeComponent, Types } from "bitecs";
 import { addAnimatedSprite } from "../../Components/AnimatedSprite";
-import { composeEntity, initComponent } from "../../Components/ComponentInitializer";
+import { composeEntity, include, initComponent, updateEntity } from "../../Components/ComponentInitializer";
 import DeltaTime from "../../Resources/DeltaTime";
 import Position, { addPosition } from '../../Components/Position';
 import Vec2 from '../../Utils/Vec2';
+import Events from '../../Events/Events';
+import Velocity, { addVelocity } from '../../Components/Velocity';
 
 const ENEMIES: IEnemyInfo[] = [];
 
@@ -32,6 +34,18 @@ const Enemy = defineComponent({
     InCollision: Types.ui8,
     DistanceToCenter: Types.f32,
 });
+
+// This is an enemy who has been hit and is flying away from the character
+const EnemyAfterHit = defineComponent({
+    type: Types.ui8, // Index into IEnemyInfo
+})
+
+function addEnemyAfterHit(enemy:number): initComponent {
+    return (world, entity) => {
+        addComponent(world, EnemyAfterHit, entity);
+        EnemyAfterHit.type[entity] = enemy;
+    };
+}
 
 function addEnemy(enemy: number, x: number, y: number): initComponent {
     return (world, entity) => {
@@ -52,10 +66,11 @@ function addEnemy(enemy: number, x: number, y: number): initComponent {
     };
 }
 
+let totalEnemies = 0;
+
 export function spawnEnemiesSystem() {
     let nextSpawn = 5000;
     let totalTime = 0;
-    let totalEnemies = 0;
     var center = new Vec2(400, 400);
 
     return defineSystem((world) => {
@@ -158,6 +173,51 @@ export function commenceToJigglin() {
     })
 }
 
+export function handleAxeHitEvents() {
+    return defineSystem((world) => {
+        for (const hit of Events.axeHits.read()) {
+            removeComponent(world, Enemy, hit.enemy);
+
+            const playerToEnemy = hit.enemyPosition.sub(hit.playerPosition).normalize();
+            const velocity = playerToEnemy.timesScalar(4);
+            
+            const enemyType = Enemy.type[hit.enemy];
+            updateEntity(world, hit.enemy, [
+                addVelocity(velocity.x, velocity.y),
+                addEnemyAfterHit(enemyType)
+            ]);
+
+        }
+
+
+        return world;
+    });
+}
+
+export function applyDragToHitEnemies() {
+    const enemyQuery = defineQuery([EnemyAfterHit, Velocity, Position]);
+
+    return defineSystem((world) => {
+        for (const enemy of enemyQuery(world)) {
+            Velocity.x[enemy] *= 0.95;
+            Velocity.y[enemy] *= 0.95;
+
+            const stalled = Math.abs(Velocity.x[enemy]) < 0.01 && Math.abs(Velocity.y[enemy]) < 0.01;
+            if (stalled) {
+                removeComponent(world, EnemyAfterHit, enemy);
+                updateEntity(world, enemy, [
+                    addEnemy(
+                        EnemyAfterHit.type[enemy],
+                        Position.x[enemy],
+                        Position.y[enemy]
+                    )
+                ]);
+            }
+        }
+
+        return world;
+    });
+}
 
 export default {
     ENEMIES,

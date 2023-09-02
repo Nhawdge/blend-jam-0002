@@ -9,10 +9,13 @@ import consts from '../../constants';
 import DeltaTime from "../../Resources/DeltaTime";
 import Sprite, { addSprite } from "../../Components/Spite";
 import Enemy from '../MainGame/Enemy';
+import Events from "../../Events/Events";
 
 const PlayerAnimations = {
     Idle: 0
 };
+
+const RADIANS_CONVERSION = 180 / Math.PI;
 
 export default PlayerAnimations;
 
@@ -124,10 +127,8 @@ export function playerAttackSystem(spriteTexture:number) {
 }
 
 export function spinAxeSystem() {
-
     const playerQuery = defineQuery([Player, Position]);
     const axeQuery = defineQuery([Position, Axe, Sprite]);
-    const enemies = defineQuery([Enemy.Enemy])
 
     return defineSystem((world) => {
         const delta = DeltaTime.get();
@@ -135,10 +136,8 @@ export function spinAxeSystem() {
         if (!player) { return world; }
 
         for (const axe of axeQuery(world)) {
-
             const time = Axe.time[axe] + delta;
             const duration = time / Axe.attackTime[axe];
-            console.log(duration);
 
             if (duration > 1) {
                 removeEntity(world, axe);
@@ -150,12 +149,52 @@ export function spinAxeSystem() {
             var newX = Math.cos(radians) * consts.SWIPE_RADIUS;
             var newY = Math.sin(radians) * consts.SWIPE_RADIUS;
             
-            Sprite.angle[axe] = radians;
+            Sprite.angle[axe] = radians * RADIANS_CONVERSION;
             Position.x[axe] = newX + Position.x[player];
             Position.y[axe] = newY + Position.y[player];
             Axe.time[axe] = time;
         }
 
+        return world;
+    });
+}
+
+export type AxeHitEvent = {
+    axe: number,
+    playerPosition: Vec2,
+    enemy: number,
+    enemyPosition: Vec2
+};
+
+export function checkForAxeCollision() {
+    const axeQuery = defineQuery([Axe, Position]);
+    const enemyQuery = defineQuery([Enemy.Enemy, Position]);
+    const playerQuery = defineQuery([Player, Position]);
+
+    const axeSizeCheck = new Vec2(16, 16);
+    const axeDistanceSquared = axeSizeCheck.squareLen();
+
+    return defineSystem((world) => {
+        const player = playerQuery(world).find(x => true);
+        if (!player) { return world; }
+
+        for (const axe of axeQuery(world)) {
+            const axePosition = new Vec2(Position.x[axe], Position.y[axe]);
+
+            for (const enemy of enemyQuery(world)) {
+                const enemyPosition = new Vec2(Position.x[enemy], Position.y[enemy]);
+                const dist = axePosition.sub(enemyPosition).squareLen();
+
+                if (dist < axeDistanceSquared) {
+                    Events.axeHits.push({
+                        axe: axe,
+                        playerPosition: new Vec2(Position.x[player], Position.y[player]),
+                        enemy: enemy,
+                        enemyPosition: enemyPosition
+                    });
+                }
+            }
+        }
 
         return world;
     })

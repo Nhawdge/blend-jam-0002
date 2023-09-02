@@ -10,8 +10,12 @@ export function include(component:Component):initComponent {
 
 export function composeEntity(world:IWorld, components:initComponent[]) : number {
     const entity = addEntity(world);
+    updateEntity(world, entity, components);
+    return entity;
+}
+
+export function updateEntity(world:IWorld, entity:number, components:initComponent[]) {
     for (const component of components) {
         component(world, entity);
     }
-    return entity;
 }

@@ -46,7 +46,7 @@ export function manageScenes(
             }
 
             keys.tick();
-            Events.collisions.tick();
+            Events.tickAll();
             commands.executePending(world);
 
             // Check for scene change

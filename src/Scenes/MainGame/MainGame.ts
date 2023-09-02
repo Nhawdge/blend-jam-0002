@@ -9,9 +9,9 @@ import { despawnSprites, spawnSprites, updateSprites } from '../../Systems/Sprit
 import { loadAseprite } from '../../Utils/AsepriteUtilities';
 import IGameContext from '../GameContext';
 import { SceneBuilder } from "../SceneManager";
-import PlayerAnimations, { playerAttackSystem, playerMovementSystem, spawnPlayer, spinAxeSystem } from './Player';
+import PlayerAnimations, { checkForAxeCollision, playerAttackSystem, playerMovementSystem, spawnPlayer, spinAxeSystem } from './Player';
 import { needleMovementSystem, spawnNeedle } from './Needle';
-import Enemy, { commenceToJigglin, IEnemyInfo, spawnEnemiesSystem } from './Enemy';
+import Enemy, { applyDragToHitEnemies, commenceToJigglin, handleAxeHitEvents, IEnemyInfo, spawnEnemiesSystem } from './Enemy';
 
 
 export default async function mainGameScene() : Promise<SceneBuilder> {
@@ -115,9 +115,12 @@ export default async function mainGameScene() : Promise<SceneBuilder> {
             spinAxeSystem(),
             simplifiedPhysics(),
             needleMovementSystem(),
+            checkForAxeCollision(),
+            handleAxeHitEvents(),
 
             spawnEnemiesSystem(),
             commenceToJigglin(),
+            applyDragToHitEnemies(),
 
             updateSprites(),
             updateAnimatedSprites(sheets, animations),
