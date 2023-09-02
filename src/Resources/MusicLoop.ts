@@ -1,5 +1,4 @@
 import * as Tone from 'tone'
-import { Instrument as inst } from 'tone/build/esm/instrument/Instrument'
 
 
 /*
@@ -22,53 +21,70 @@ Each loop, the player reads the positions in the track and sets note durations b
 
 */
 
-function getChordNotes(): Array<string>{
-
-    var notes:Array<string>=new Array<string>(3);
-
-    return new Array<string>();
-}
-
-
 interface Instrument {
     playNote(note:string | null):void;
 }
 
 
 class Kick implements Instrument{
+    private synth:Tone.MembraneSynth;
+
+    constructor() {
+        this.synth = new Tone.MembraneSynth().toDestination();
+    }
+
     playNote(note:string | null): void {
-        const synth = new Tone.MembraneSynth().toDestination();
-        synth.triggerAttackRelease("C1", "8n");
+        this.synth.triggerAttackRelease("C1", "8n");
     }
 }
 
 class Snare implements Instrument{
+    private noiseSynth:Tone.NoiseSynth;
+    constructor() {
+        this.noiseSynth = new Tone.NoiseSynth({
+            volume: 0,
+            envelope: {
+				attack: 0.01,
+				decay: 0.3
+			},
+        }).toDestination();
+    }
+    
     playNote(note:string | null): void {
-        const noiseSynth = new Tone.NoiseSynth().toDestination();
-        noiseSynth.triggerAttackRelease("8n", 0.05);
+        this.noiseSynth.triggerAttack();
     }
 }
 
 class Chord implements Instrument{
+    private chorus:Tone.Chorus;
+    private synth:Tone.PolySynth;
+
+    constructor() {
+        this.chorus = new Tone.Chorus(4, 2.5, 0.5).toDestination().start();
+        this.synth = new Tone.PolySynth().connect(this.chorus);
+        this.synth.set({ detune: -1200 });
+    }
+
     playNote(note:string | null): void {
-        const chorus = new Tone.Chorus(4, 2.5, 0.5).toDestination().start();
-        const synth = new Tone.PolySynth().connect(chorus);
-        // set the attributes across all the voices using 'set'
-        synth.set({ detune: -1200 });
-        // play a chord
-        synth.triggerAttackRelease(["C4", "E4", "A4"], '8n');
+        this.synth.triggerAttackRelease(["C4", "E4", "A4"], '8n');
     }
 }
 
 class Lead implements Instrument{
+    private freeverb:Tone.Freeverb;
+    private synth:Tone.Synth;
+
+    constructor() {
+        this.freeverb = new Tone.Freeverb().toDestination();
+        this.freeverb.dampening = 1000;
+
+        this.synth = new Tone.Synth().connect(this.freeverb);
+
+    }
+
     playNote(note:string | null): void {
         if (!note) { return; }
-
-        const freeverb = new Tone.Freeverb().toDestination();
-        freeverb.dampening = 1000;
-        const synth = new Tone.Synth().connect(freeverb);
-        synth.triggerAttackRelease(note, "8n"); 
-        //synth.triggerAttackRelease("C4", "8n"); 
+        this.synth.triggerAttackRelease(note, "8n"); 
     }
 }
 

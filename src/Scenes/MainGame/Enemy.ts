@@ -9,6 +9,7 @@ export type IEnemyInfo = {
     ringRadius: number,
     ringRadiusSquared: number,
     trackId: number,
+    useNotes: boolean,
     animations: {
         idle: number
     }
@@ -24,6 +25,7 @@ import Events from '../../Events/Events';
 import Velocity, { addVelocity } from '../../Components/Velocity';
 import ToneTiming from '../../Resources/ToneTiming';
 import { addSprite } from '../../Components/Spite';
+import constants from '../../constants';
 
 const ENEMIES: IEnemyInfo[] = [];
 
@@ -34,25 +36,26 @@ const Enemy = defineComponent({
     time2: Types.f32, // How long original supposed to be in this state (only used when wandering)
     destX: Types.f32, // Destination location
     destY: Types.f32,
-    startX: Types.f32,
+    startX: Types.f32, // Start location (when wandering)
     startY: Types.f32,
-    InCollision: Types.ui8,
-    DistanceToCenter: Types.f32,
+    noteIndex: Types.ui8, // Index to the note in constants.COLORS. Not applicable to all enemy types.
 });
 
 // This is an enemy who has been hit and is flying away from the character
 const EnemyAfterHit = defineComponent({
     type: Types.ui8, // Index into IEnemyInfo
+    noteIndex: Types.ui8, // Index to the note in constants.COLORS. Not applicable to all enemy types.
 })
 
-function addEnemyAfterHit(enemy:number): initComponent {
+function addEnemyAfterHit(enemy:number, noteIndex: number): initComponent {
     return (world, entity) => {
         addComponent(world, EnemyAfterHit, entity);
         EnemyAfterHit.type[entity] = enemy;
+        EnemyAfterHit.noteIndex[entity] = noteIndex;
     };
 }
 
-function addEnemy(enemy: number, x: number, y: number): initComponent {
+function addEnemy(enemy: number, x: number, y: number, noteIndex: number): initComponent {
     return (world, entity) => {
         addComponent(world, Enemy, entity);
         Enemy.type[entity] = enemy;
@@ -63,11 +66,9 @@ function addEnemy(enemy: number, x: number, y: number): initComponent {
         Enemy.destY[entity] = 0;
         Enemy.startX[entity] = x;
         Enemy.startY[entity] = y;
-        Enemy.InCollision[entity] = 0;
+        Enemy.noteIndex[entity] = noteIndex;
 
         var center = new Vec2(400, 400);
-
-        Enemy.DistanceToCenter[entity] = center.sub(new Vec2(x, y)).length();
     };
 }
 
@@ -104,8 +105,13 @@ export function spawnEnemiesSystem() {
             const x = (Math.random() * consts.SPAWN_SIZE) - (consts.SPAWN_SIZE / 2);
             const y = (Math.random() * consts.SPAWN_SIZE) - (consts.SPAWN_SIZE / 2);
 
+            let note = 0;
+            if (enemyInfo.useNotes) {
+                note = Math.floor(Math.random() * constants.NOTES.length);
+            }
+
             composeEntity(world, [
-                addEnemy(result.index, x, y),
+                addEnemy(result.index, x, y, note),
                 addAnimatedSprite(
                     enemyInfo.sheet,
                     enemyInfo.animations.idle
@@ -151,9 +157,6 @@ export function commenceToJigglin() {
                     let newPosition = pos.add(offset);
                     Enemy.destX[entity] = newPosition.x;
                     Enemy.destY[entity] = newPosition.y;
-
-                    Enemy.DistanceToCenter[entity] = center.sub(newPosition).length();
-                    Enemy.InCollision[entity] = Enemy.DistanceToCenter[entity] > consts.RING_1_RADIUS && Enemy.DistanceToCenter[entity] < consts.RING_5_RADIUS ? 1 : 0;
                 }
 
                 const newTime = (Math.random() * 5000) + 2000;
@@ -183,13 +186,14 @@ export function handleAxeHitEvents() {
         for (const hit of Events.axeHits.read()) {
 
             const playerToEnemy = hit.enemyPosition.sub(hit.playerPosition).normalize();
-            const velocity = playerToEnemy.timesScalar(4);
+            const velocity = playerToEnemy.timesScalar(constants.PLAYER_AXE_HIT_VELOCITY);
             const enemyType = Enemy.type[hit.enemy];
+            const enemyNote = Enemy.noteIndex[hit.enemy];
 
             removeComponent(world, Enemy, hit.enemy);
             updateEntity(world, hit.enemy, [
                 addVelocity(velocity.x, velocity.y),
-                addEnemyAfterHit(enemyType)
+                addEnemyAfterHit(enemyType, enemyNote)
             ]);
 
         }
@@ -210,12 +214,14 @@ export function applyDragToHitEnemies() {
             const stalled = Math.abs(Velocity.x[enemy]) < 0.01 && Math.abs(Velocity.y[enemy]) < 0.01;
             if (stalled) {
                 const type = EnemyAfterHit.type[enemy];
+                const note = EnemyAfterHit.noteIndex[enemy];
                 removeComponent(world, EnemyAfterHit, enemy);
                 updateEntity(world, enemy, [
                     addEnemy(
                         type,
                         Position.x[enemy],
-                        Position.y[enemy]
+                        Position.y[enemy],
+                        note
                     )
                 ]);
             }
@@ -238,7 +244,9 @@ export function detectHitRing(noteTexture:number) {
             if (distFromCenter > enemyInfo.ringRadiusSquared) {
                 const beat = ToneTiming.getPlaceInSong(rayFromCenter);
                 const newPlace = ToneTiming.getPlaceOnRing(beat, enemyInfo.ringRadius);
-                ToneTiming.loop.addNote(enemyInfo.trackId, beat, 'C');
+                const noteIndex = EnemyAfterHit.noteIndex[enemy];
+
+                ToneTiming.loop.addNote(enemyInfo.trackId, beat, constants.NOTES[noteIndex].NOTE);
 
                 composeEntity(world, [
                     addSprite(noteTexture),

@@ -36,6 +36,7 @@ export default async function mainGameScene() : Promise<SceneBuilder> {
         ringRadius: constants.RING_1_RADIUS,
         ringRadiusSquared: constants.RING_1_RADIUS * constants.RING_1_RADIUS,
         trackId: 3,
+        useNotes: true,
         animations: {
             idle: animations.add('pebble:idle')
         }
@@ -50,6 +51,7 @@ export default async function mainGameScene() : Promise<SceneBuilder> {
         ringRadius: constants.RING_2_RADIUS,
         ringRadiusSquared: constants.RING_2_RADIUS * constants.RING_2_RADIUS,
         trackId: 2,
+        useNotes: true,
         animations: {
             idle: animations.add('rock:idle')
         }
@@ -64,33 +66,12 @@ export default async function mainGameScene() : Promise<SceneBuilder> {
         ringRadius: constants.RING_3_RADIUS,
         ringRadiusSquared: constants.RING_3_RADIUS * constants.RING_3_RADIUS,
         trackId: 0,
+        useNotes: false,
         animations: {
             idle: animations.add('boulder:idle')
         }
     };
     Enemy.ENEMIES.push(boulder);
-
-    // const chord:IEnemyInfo = {
-    //     sheet: sheets.add(await loadAseprite('assets/enemy/chord-enemy.png', 'assets/enemy/chord-enemy.json', 'lead:')),
-    //     speed: 1,
-    //     minTimeToSpawn: 5,
-    //     spawnRate: 1,
-    //     animations: {
-    //         idle: animations.add('lead:idle')
-    //     }
-    // };
-    // ENEMIES.push(chord);
-
-    // const lead:IEnemyInfo = {
-    //     sheet: sheets.add(await loadAseprite('assets/enemy/lead-enemy.png', 'assets/enemy/lead-enemy.json', 'chord:')),
-    //     speed: 1,
-    //     minTimeToSpawn: 3,
-    //     spawnRate: 1,
-    //     animations: {
-    //         idle: animations.add('chord:idle')
-    //     }
-    // };
-    // ENEMIES.push(lead);
 
     const snare:IEnemyInfo = {
         sheet: sheets.add(await loadAseprite('assets/enemy/snare-enemy.png', 'assets/enemy/snare-enemy.json', 'snare:')),
@@ -100,6 +81,7 @@ export default async function mainGameScene() : Promise<SceneBuilder> {
         ringRadius: constants.RING_4_RADIUS,
         ringRadiusSquared: constants.RING_4_RADIUS * constants.RING_4_RADIUS,
         trackId: 1,
+        useNotes: false,
         animations: {
             idle: animations.add('snare:idle')
         }

@@ -18,15 +18,16 @@ export default {
     SPAWN_SIZE: 400,
     SWIPE_TIME: 500,
     SWIPE_RADIUS: 30,
+    PLAYER_AXE_HIT_VELOCITY: 10,
     TIMING: {
         BPM: 120,
         BARS: 4,
     },
     NOTES: [
-        { NOTE: "C", COLOR: 0xec9e14 },
-        { NOTE: "D", COLOR: 0xecb913 },
-        { NOTE: "E", COLOR: 0xefd50e },
-        { NOTE: "G", COLOR: 0xe96254 },
-        { NOTE: "A", COLOR: 0xe46a28 },
+        { NOTE: "C4", COLOR: 0xec9e14 },
+        { NOTE: "D4", COLOR: 0xecb913 },
+        { NOTE: "E4", COLOR: 0xefd50e },
+        { NOTE: "G4", COLOR: 0xe96254 },
+        { NOTE: "A4", COLOR: 0xe46a28 },
     ],
 };
