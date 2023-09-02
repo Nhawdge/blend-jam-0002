@@ -12,6 +12,8 @@ export default class Vec2 {
 
     length() { return Math.sqrt(this.x * this.x + this.y * this.y); }
 
+    radians() { return Math.atan2(this.x, this.y); }
+
     normalize() {
         const inv = 1 / this.length();
         return new Vec2(this.x * inv, this.y * inv);

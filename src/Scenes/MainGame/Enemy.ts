@@ -6,19 +6,23 @@ export type IEnemyInfo = {
     sheet: number,
     spawnRate: number,
     minTimeToSpawn: number,
+    ringRadius: number,
+    ringRadiusSquared: number,
     animations: {
         idle: number
     }
 }
 
-import { addComponent, defineComponent, defineQuery, defineSystem, IWorld, removeComponent, Types } from "bitecs";
+import { addComponent, defineComponent, defineQuery, defineSystem, IWorld, removeComponent, removeEntity, Types } from "bitecs";
 import { addAnimatedSprite } from "../../Components/AnimatedSprite";
-import { composeEntity, include, initComponent, updateEntity } from "../../Components/ComponentInitializer";
+import { composeEntity, initComponent, updateEntity } from "../../Components/ComponentInitializer";
 import DeltaTime from "../../Resources/DeltaTime";
 import Position, { addPosition } from '../../Components/Position';
 import Vec2 from '../../Utils/Vec2';
 import Events from '../../Events/Events';
 import Velocity, { addVelocity } from '../../Components/Velocity';
+import { getPlaceInSong, getPlaceOnRing } from '../../Resources/ToneTiming';
+import { addSprite } from '../../Components/Spite';
 
 const ENEMIES: IEnemyInfo[] = [];
 
@@ -176,12 +180,12 @@ export function commenceToJigglin() {
 export function handleAxeHitEvents() {
     return defineSystem((world) => {
         for (const hit of Events.axeHits.read()) {
-            removeComponent(world, Enemy, hit.enemy);
 
             const playerToEnemy = hit.enemyPosition.sub(hit.playerPosition).normalize();
             const velocity = playerToEnemy.timesScalar(4);
-            
             const enemyType = Enemy.type[hit.enemy];
+
+            removeComponent(world, Enemy, hit.enemy);
             updateEntity(world, hit.enemy, [
                 addVelocity(velocity.x, velocity.y),
                 addEnemyAfterHit(enemyType)
@@ -204,10 +208,11 @@ export function applyDragToHitEnemies() {
 
             const stalled = Math.abs(Velocity.x[enemy]) < 0.01 && Math.abs(Velocity.y[enemy]) < 0.01;
             if (stalled) {
+                const type = EnemyAfterHit.type[enemy];
                 removeComponent(world, EnemyAfterHit, enemy);
                 updateEntity(world, enemy, [
                     addEnemy(
-                        EnemyAfterHit.type[enemy],
+                        type,
                         Position.x[enemy],
                         Position.y[enemy]
                     )
@@ -217,6 +222,34 @@ export function applyDragToHitEnemies() {
 
         return world;
     });
+}
+
+export function detectHitRing(noteTexture:number) {
+    const hitEnemyQuery = defineQuery([EnemyAfterHit, Position]);
+    const center = new Vec2(0, 0);
+
+    return defineSystem((world) => {
+        for (const enemy of hitEnemyQuery(world)) {
+            const rayFromCenter = new Vec2(Position.x[enemy], Position.y[enemy]);
+            const distFromCenter = rayFromCenter.squareLen();
+
+            const enemyInfo = ENEMIES[EnemyAfterHit.type[enemy]];
+            if (distFromCenter > enemyInfo.ringRadiusSquared) {
+                const beat = getPlaceInSong(rayFromCenter);
+                const newPlace = getPlaceOnRing(beat, enemyInfo.ringRadius);
+
+                composeEntity(world, [
+                    addSprite(noteTexture),
+                    addPosition(newPlace.x, newPlace.y),
+                ]);
+
+                removeEntity(world, enemy);
+                totalEnemies -= 1;
+            }
+        }
+
+        return world;
+    })
 }
 
 export default {

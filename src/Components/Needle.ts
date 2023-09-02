@@ -1,5 +1,6 @@
 import { addComponent, defineComponent, Types } from "bitecs";
 import { initComponent } from "./ComponentInitializer";
+import { TOTAL_TIME } from '../Resources/ToneTiming';
 
 const Needle = defineComponent({
     radius: Types.f32,
@@ -12,7 +13,7 @@ export function addNeedle() : initComponent {
     return (world, entity) => {
         addComponent(world, Needle, entity);
         Needle.radius[entity] = 328;
-        Needle.loopDuration[entity] = 16000;
+        Needle.loopDuration[entity] = TOTAL_TIME * 1000;
         Needle.currentTime[entity] = 0;
     };
 }

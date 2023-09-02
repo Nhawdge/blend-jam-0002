@@ -18,6 +18,10 @@ export default {
     SPAWN_SIZE: 400,
     SWIPE_TIME: 500,
     SWIPE_RADIUS: 30,
+    TIMING: {
+        BPM: 120,
+        BARS: 4,
+    },
     NOTES: [
         { NOTE: "C", COLOR: 0xec9e14 },
         { NOTE: "D", COLOR: 0xecb913 },

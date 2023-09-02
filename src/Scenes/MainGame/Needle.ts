@@ -36,15 +36,15 @@ export function needleMovementSystem() {
     return defineSystem((world) => {
         const needle = needleQuery(world).find(x => true);
         if (!needle) { return world; }
+
         Needle.currentTime[needle] += DeltaTime.get();
         var duration = Needle.loopDuration[needle];
-        var segments = duration / 360;
         var timePercent = Needle.currentTime[needle] / duration;
-        Needle.angle[needle] = segments * timePercent;
 
-        //Needle.angle[needle] += (DeltaTime.get() / 1000) * Needle.speed[needle];
+        const angle = 360 * timePercent;
+        Needle.angle[needle] = angle;
+        Sprite.angle[needle] = angle;
 
-        Sprite.angle[needle] = Needle.angle[needle];
 
         var angleInRadians = Needle.angle[needle] / 180 * Math.PI;
 

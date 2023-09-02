@@ -178,6 +178,7 @@ export function checkForAxeCollision() {
         const player = playerQuery(world).find(x => true);
         if (!player) { return world; }
 
+        
         for (const axe of axeQuery(world)) {
             const axePosition = new Vec2(Position.x[axe], Position.y[axe]);
 

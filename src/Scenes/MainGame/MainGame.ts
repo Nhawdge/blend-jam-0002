@@ -11,7 +11,8 @@ import IGameContext from '../GameContext';
 import { SceneBuilder } from "../SceneManager";
 import PlayerAnimations, { checkForAxeCollision, playerAttackSystem, playerMovementSystem, spawnPlayer, spinAxeSystem } from './Player';
 import { needleMovementSystem, spawnNeedle } from './Needle';
-import Enemy, { applyDragToHitEnemies, commenceToJigglin, handleAxeHitEvents, IEnemyInfo, spawnEnemiesSystem } from './Enemy';
+import Enemy, { applyDragToHitEnemies, commenceToJigglin, detectHitRing, handleAxeHitEvents, IEnemyInfo, spawnEnemiesSystem } from './Enemy';
+import constants from '../../constants';
 
 
 export default async function mainGameScene() : Promise<SceneBuilder> {
@@ -19,6 +20,7 @@ export default async function mainGameScene() : Promise<SceneBuilder> {
     const bg = textures.add(await PIXI.Assets.load('assets/prototype-level.png') as PIXI.Texture);
     const needleTexture = textures.add(await PIXI.Assets.load('assets/needle.png') as PIXI.Texture);
     const axeTexture = textures.add(await PIXI.Assets.load('assets/player/pickaxe.png') as PIXI.Texture);
+    const noteTexture = textures.add(await PIXI.Assets.load('assets/enviroment/note.png') as PIXI.Texture);
 
     const sheets = createResourceMap<PIXI.Spritesheet>();
     const animations = createResourceMap<string>();
@@ -30,6 +32,8 @@ export default async function mainGameScene() : Promise<SceneBuilder> {
         speed: 1,
         minTimeToSpawn: 5,
         spawnRate: 1,
+        ringRadius: constants.RING_1_RADIUS,
+        ringRadiusSquared: constants.RING_1_RADIUS * constants.RING_1_RADIUS,
         animations: {
             idle: animations.add('pebble:idle')
         }
@@ -41,6 +45,8 @@ export default async function mainGameScene() : Promise<SceneBuilder> {
         speed: 1,
         minTimeToSpawn: 5,
         spawnRate: 1,
+        ringRadius: constants.RING_2_RADIUS,
+        ringRadiusSquared: constants.RING_2_RADIUS * constants.RING_2_RADIUS,
         animations: {
             idle: animations.add('rock:idle')
         }
@@ -52,6 +58,8 @@ export default async function mainGameScene() : Promise<SceneBuilder> {
         speed: 1,
         minTimeToSpawn: 5,
         spawnRate: 1,
+        ringRadius: constants.RING_3_RADIUS,
+        ringRadiusSquared: constants.RING_3_RADIUS * constants.RING_3_RADIUS,
         animations: {
             idle: animations.add('boulder:idle')
         }
@@ -85,6 +93,8 @@ export default async function mainGameScene() : Promise<SceneBuilder> {
         speed: 1,
         minTimeToSpawn: 3,
         spawnRate: 1,
+        ringRadius: constants.RING_4_RADIUS,
+        ringRadiusSquared: constants.RING_4_RADIUS * constants.RING_4_RADIUS,
         animations: {
             idle: animations.add('snare:idle')
         }
@@ -109,14 +119,15 @@ export default async function mainGameScene() : Promise<SceneBuilder> {
         return [
             spawnSprites(textures, container),
             spawnAnimatedSprites(sheets, animations, container),
+            detectHitRing(noteTexture),
 
             playerMovementSystem(),
             playerAttackSystem(axeTexture),
             spinAxeSystem(),
             simplifiedPhysics(),
             needleMovementSystem(),
-            checkForAxeCollision(),
             handleAxeHitEvents(),
+            checkForAxeCollision(),
 
             spawnEnemiesSystem(),
             commenceToJigglin(),
