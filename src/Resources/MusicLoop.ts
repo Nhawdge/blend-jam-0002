@@ -29,58 +29,41 @@ function getChordNotes(): Array<string>{
     return new Array<string>();
 }
 
-enum TrackType {
-    Repeat,
-    Hold,
-    Sustain
-}
 
-enum InstrumentType {
-    Kick,
-    Snare,
-    Bass,
-    Chord,
-    Lead
-
-}
-
-abstract class Instrument {
-    playBeat(): void {
-
-    }
-    playNote(note:string):void{
-
-    }  
+interface Instrument {
+    playNote(note:string | null):void;
 }
 
 
-class Kick extends Instrument{
-    playBeat(): void {
+class Kick implements Instrument{
+    playNote(note:string | null): void {
         const synth = new Tone.MembraneSynth().toDestination();
         synth.triggerAttackRelease("C1", "8n");
     }
 }
 
-class Snare extends Instrument{
-    playBeat(): void {
+class Snare implements Instrument{
+    playNote(note:string | null): void {
         const noiseSynth = new Tone.NoiseSynth().toDestination();
         noiseSynth.triggerAttackRelease("8n", 0.05);
     }
 }
 
-class Chord extends Instrument{
-    playNote(note:string): void {
+class Chord implements Instrument{
+    playNote(note:string | null): void {
         const chorus = new Tone.Chorus(4, 2.5, 0.5).toDestination().start();
         const synth = new Tone.PolySynth().connect(chorus);
         // set the attributes across all the voices using 'set'
         synth.set({ detune: -1200 });
         // play a chord
-        synth.triggerAttackRelease(["C4", "E4", "A4"], 1);
+        synth.triggerAttackRelease(["C4", "E4", "A4"], '8n');
     }
 }
 
-class Lead extends Instrument{
-    playNote(note:string): void {
+class Lead implements Instrument{
+    playNote(note:string | null): void {
+        if (!note) { return; }
+
         const freeverb = new Tone.Freeverb().toDestination();
         freeverb.dampening = 1000;
         const synth = new Tone.Synth().connect(freeverb);
@@ -89,66 +72,40 @@ class Lead extends Instrument{
     }
 }
 
-class MusicTrack{
-    beats:Array<string>=new Array<string>(64)
-    instrument:Instrument;
+class Track {
+    notes: Map<number, string | null>
+    instrument: Instrument
 
-    constructor(instrument:Instrument) {
-        this.instrument=instrument
-    }
-    
-    add(note:string, beat:number) {
-        this.beats[beat] = note;
+    constructor(instrument: Instrument) {
+        this.notes = new Map<number, string | null>();
+        this.instrument = instrument;
     }
 }
 
-class MusicLoop{
-    //Whether track is running
-    playing:boolean=false
-
-    //Current BPM
-    bpm:number=120
-
-    //Which beat are we on?
-    currentBeat:number=0
-
-    kick:MusicTrack=new MusicTrack(new Kick())
-    snare:MusicTrack=new MusicTrack(new Snare())
-    chord:MusicTrack=new MusicTrack(new Chord())
-    lead:MusicTrack=new MusicTrack(new Lead())
-
-    tracks:Array<MusicTrack> = new Array<MusicTrack>(4)
-
-
-
-    play() {
-        if(this.kick.beats[this.currentBeat] != ""){
-            this.kick.instrument.playBeat();
-        }
-        if(this.snare.beats[this.currentBeat] != ""){
-            this.snare.instrument.playBeat();
-        }
-        if(this.chord.beats[this.currentBeat] != ""){
-            this.chord.instrument.playNote(this.chord.beats[this.currentBeat]);
-        }
-        if(this.lead.beats[this.currentBeat] != ""){
-            this.lead.instrument.playNote(this.lead.beats[this.currentBeat]);
-        }
-        if(this.playing == false){
-            this.playing = true;
-        }
-
-    }
-
-    pause() {
-        this.playing = false;
-    }
+class MusicLoop {
+    tracks:Array<Track>
 
     constructor() {
-        Tone.Transport.bpm.value=this.bpm
+        this.tracks = [
+            new Track(new Kick()),
+            new Track(new Snare()),
+            new Track(new Chord()),
+            new Track(new Lead()),
+        ];
     }
 
-}
+    play(beat:number) {
+        for (const track of this.tracks) {
+            if (track.notes.has(beat)) {
+                const note = track.notes.get(beat)!;
+                track.instrument.playNote(note);
+            }
+        }
+    }
 
+    addNote(trackId: number, beat:number, note:string | null) {
+        this.tracks[trackId].notes.set(beat, note);
+    }
+}
 
 export default MusicLoop

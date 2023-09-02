@@ -11,6 +11,10 @@ import commands from "../Resources/Commands";
 
 export type SceneBuilder = (context:IGameContext) => System<[], IWorld>[];
 
+export function addHoc(method:() => void) : (world:IWorld) => IWorld {
+    return (world) => { method(); return world; }
+}
+
 export function manageScenes(
     scenes: IResourceMap<SceneBuilder>, 
     app: PIXI.Application
@@ -47,6 +51,7 @@ export function manageScenes(
 
             keys.tick();
             Events.tickAll();
+            // toneTiming.tick();
             commands.executePending(world);
 
             // Check for scene change

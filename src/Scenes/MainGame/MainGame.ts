@@ -8,11 +8,12 @@ import { simplifiedPhysics } from '../../Systems/PhysicsSystems';
 import { despawnSprites, spawnSprites, updateSprites } from '../../Systems/SpriteSystem';
 import { loadAseprite } from '../../Utils/AsepriteUtilities';
 import IGameContext from '../GameContext';
-import { SceneBuilder } from "../SceneManager";
+import { addHoc, SceneBuilder } from "../SceneManager";
 import PlayerAnimations, { checkForAxeCollision, playerAttackSystem, playerMovementSystem, spawnPlayer, spinAxeSystem } from './Player';
 import { needleMovementSystem, spawnNeedle } from './Needle';
 import Enemy, { applyDragToHitEnemies, commenceToJigglin, detectHitRing, handleAxeHitEvents, IEnemyInfo, spawnEnemiesSystem } from './Enemy';
 import constants from '../../constants';
+import ToneTiming from '../../Resources/ToneTiming';
 
 
 export default async function mainGameScene() : Promise<SceneBuilder> {
@@ -34,6 +35,7 @@ export default async function mainGameScene() : Promise<SceneBuilder> {
         spawnRate: 1,
         ringRadius: constants.RING_1_RADIUS,
         ringRadiusSquared: constants.RING_1_RADIUS * constants.RING_1_RADIUS,
+        trackId: 3,
         animations: {
             idle: animations.add('pebble:idle')
         }
@@ -47,6 +49,7 @@ export default async function mainGameScene() : Promise<SceneBuilder> {
         spawnRate: 1,
         ringRadius: constants.RING_2_RADIUS,
         ringRadiusSquared: constants.RING_2_RADIUS * constants.RING_2_RADIUS,
+        trackId: 2,
         animations: {
             idle: animations.add('rock:idle')
         }
@@ -60,6 +63,7 @@ export default async function mainGameScene() : Promise<SceneBuilder> {
         spawnRate: 1,
         ringRadius: constants.RING_3_RADIUS,
         ringRadiusSquared: constants.RING_3_RADIUS * constants.RING_3_RADIUS,
+        trackId: 0,
         animations: {
             idle: animations.add('boulder:idle')
         }
@@ -95,6 +99,7 @@ export default async function mainGameScene() : Promise<SceneBuilder> {
         spawnRate: 1,
         ringRadius: constants.RING_4_RADIUS,
         ringRadiusSquared: constants.RING_4_RADIUS * constants.RING_4_RADIUS,
+        trackId: 1,
         animations: {
             idle: animations.add('snare:idle')
         }
@@ -115,6 +120,7 @@ export default async function mainGameScene() : Promise<SceneBuilder> {
         spawnPlayer(world, playerSheet);
         spawnNeedle(world, needleTexture);
 
+        ToneTiming.reset();
 
         return [
             spawnSprites(textures, container),
@@ -137,6 +143,7 @@ export default async function mainGameScene() : Promise<SceneBuilder> {
             updateAnimatedSprites(sheets, animations),
             despawnSprites(container),
             despawnAnimatedSprites(container),
+            addHoc(() => { ToneTiming.tick() }),
         ];
     }
 }

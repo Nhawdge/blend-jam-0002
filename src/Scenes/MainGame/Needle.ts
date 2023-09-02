@@ -1,14 +1,9 @@
-import { defineComponent, defineQuery, defineSystem, IWorld, Types } from "bitecs";
-import { addAnimatedSprite } from "../../Components/AnimatedSprite";
-import { composeEntity, include } from "../../Components/ComponentInitializer";
+import {  defineQuery, defineSystem, IWorld } from "bitecs";
+import { composeEntity } from "../../Components/ComponentInitializer";
 import Position, { addPosition } from "../../Components/Position";
-import Velocity, { addVelocity } from "../../Components/Velocity";
-import keys from '../../Resources/KeysResource';
-import Vec2 from "../../Utils/Vec2";
-import consts from '../../constants';
 import Sprite, { addSprite } from "../../Components/Spite";
-import DeltaTime from "../../Resources/DeltaTime";
 import Needle, { addNeedle } from "../../Components/Needle";
+import ToneTiming from "../../Resources/ToneTiming";
 
 const PlayerAnimations = {
     Idle: 0
@@ -37,16 +32,16 @@ export function needleMovementSystem() {
         const needle = needleQuery(world).find(x => true);
         if (!needle) { return world; }
 
-        Needle.currentTime[needle] += DeltaTime.get();
-        var duration = Needle.loopDuration[needle];
-        var timePercent = Needle.currentTime[needle] / duration;
+        // Needle.currentTime[needle] += DeltaTime.get();
+        // var duration = Needle.loopDuration[needle];
+        // var timePercent = Needle.currentTime[needle] / duration;
 
-        const angle = 360 * timePercent;
+        const angle = 360 * (ToneTiming.getPercent() - 0.25);
         Needle.angle[needle] = angle;
         Sprite.angle[needle] = angle;
 
 
-        var angleInRadians = Needle.angle[needle] / 180 * Math.PI;
+        var angleInRadians = angle / 180 * Math.PI;
 
         var newX = Math.cos(angleInRadians) * Needle.radius[needle];
         var newY = Math.sin(angleInRadians) * Needle.radius[needle];

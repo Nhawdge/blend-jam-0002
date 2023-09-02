@@ -8,6 +8,7 @@ export type IEnemyInfo = {
     minTimeToSpawn: number,
     ringRadius: number,
     ringRadiusSquared: number,
+    trackId: number,
     animations: {
         idle: number
     }
@@ -21,7 +22,7 @@ import Position, { addPosition } from '../../Components/Position';
 import Vec2 from '../../Utils/Vec2';
 import Events from '../../Events/Events';
 import Velocity, { addVelocity } from '../../Components/Velocity';
-import { getPlaceInSong, getPlaceOnRing } from '../../Resources/ToneTiming';
+import ToneTiming from '../../Resources/ToneTiming';
 import { addSprite } from '../../Components/Spite';
 
 const ENEMIES: IEnemyInfo[] = [];
@@ -235,8 +236,9 @@ export function detectHitRing(noteTexture:number) {
 
             const enemyInfo = ENEMIES[EnemyAfterHit.type[enemy]];
             if (distFromCenter > enemyInfo.ringRadiusSquared) {
-                const beat = getPlaceInSong(rayFromCenter);
-                const newPlace = getPlaceOnRing(beat, enemyInfo.ringRadius);
+                const beat = ToneTiming.getPlaceInSong(rayFromCenter);
+                const newPlace = ToneTiming.getPlaceOnRing(beat, enemyInfo.ringRadius);
+                ToneTiming.loop.addNote(enemyInfo.trackId, beat, 'C');
 
                 composeEntity(world, [
                     addSprite(noteTexture),
